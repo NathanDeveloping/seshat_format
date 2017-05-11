@@ -1,0 +1,16 @@
+{
+  "name": "seshat_format",
+  "type" : "project",
+  "require": {
+    "php": ">=5.4.0",
+    "phpoffice/phpexcel" : ">=1.8.1",
+    "psr/log" : ">=1.0.0"
+  },
+  "autoload": {
+    "psr-0": {
+      "seshatFormat": "src",
+      "config" : "src"
+    }
+  }
+
+}
