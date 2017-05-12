@@ -2,6 +2,8 @@
 
 namespace seshatFormat\scripts;
 use seshatFormat\util\Logger;
+use PHPExcel;
+use PHPExcel_Writer_Excel2007;
 use Exception;
 use PDO;
 
@@ -64,6 +66,7 @@ class DatabaseFormatter
                 $this->logger->alert($e->getMessage());
             }
         }
+        $this->init();
     }
 
     /**
@@ -113,7 +116,6 @@ class DatabaseFormatter
      *          object phpExcel précédemment crée
      */
     public function createSkeleton() {
-        $this->currentExcelObject->setActiveSheet(0);
         $this->currentExcelObject->getActiveSheet()->setTitle('INTRO');
         $this->addNextLine("TITLE");
         $this->insertEmptyLine();
@@ -179,6 +181,8 @@ class DatabaseFormatter
         $this->addNextLine("METHODOLOGY"); $this->addNextColumn("field campaign report"); $this->resetColumn();
         $this->addNextLine("METHODOLOGY"); $this->addNextColumn("sample storage"); $this->resetColumn();
         $this->addNextLine("METHODOLOGY"); $this->addNextColumn("comments"); $this->resetColumn();
+        $objWriter = new PHPExcel_Writer_Excel2007($this->currentExcelObject);
+        $objWriter->save("test.xlsx");
     }
 
     /**
@@ -195,12 +199,12 @@ class DatabaseFormatter
     }
 
     public function resetColumn() {
-        $this->currentColumn = 1;
+        $this->currentColumn = 'A';
     }
 
     public function insertEmptyLine() {
         $this->resetColumn();
-        $this->addNextLine("");
+        $this->addNextLine(null);
     }
 
     /**
