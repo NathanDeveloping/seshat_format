@@ -6,6 +6,16 @@ use Psr\Log\AbstractLogger;
 class Logger extends AbstractLogger
 {
 
+    private static $instance;
+
+    private function __construct(){}
+
+    public static function getInstance() {
+        if(!isset($instance)) {
+            $instance = new Logger();
+        }
+        return $instance;
+    }
 
     public function log($level, $message, array $context = [])
     {
