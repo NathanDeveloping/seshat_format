@@ -11,6 +11,12 @@ namespace seshatFormat\scripts;
 
 use seshatFormat\util\Logger;
 
+/**
+ * Class FormFormatter
+ * permet le formattage des formulaires
+ * du même nom
+ * @package seshatFormat\scripts
+ */
 class FormFormatter
 {
 
@@ -25,7 +31,7 @@ class FormFormatter
     }
 
     /**
-     * récupère les différents formulaires
+     * récupère les différents formulaires du même nom
      * stockés dans la BDD
      */
     public function getDistinctForms() {
@@ -42,6 +48,10 @@ class FormFormatter
 
     }
 
+    /**
+     * lance le formattage sur tous les formulaires
+     * provenant du même formulaire vierge
+     */
     public function formatAll() {
         $this->getDistinctForms();
         if($this->formList) {

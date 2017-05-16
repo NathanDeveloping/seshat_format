@@ -22,6 +22,11 @@ class Operator
 
     private $nbField, $fields;
 
+    /**
+     * Operator constructor.
+     * @param $nomForm
+     * @param $uri
+     */
     public function __construct($nomForm, $uri)
     {
         $this->db = DatabaseConnexion::getInstance()->getDB();
@@ -30,6 +35,10 @@ class Operator
         $this->init();
     }
 
+    /**
+     * récupère les champs FILE_CREATOR et OPERATOR
+     * d'un formulaire ainsi que leur nombre
+     */
     public function init() {
         if(!isset($this->db)) {
             return;

@@ -11,12 +11,21 @@ use seshatFormat\util\Logger;
 use Exception;
 use PDO;
 
+/**
+ * Class DatabaseConnexion
+ * Singleton de connexion à la base
+ * de données
+ * @package seshatFormat\scripts
+ */
 class DatabaseConnexion
 {
 
     private static $instance;
     private $db;
 
+    /**
+     * DatabaseConnexion constructor.
+     */
     private function __construct()
     {
         $config = parse_ini_file("config/config.ini");
@@ -38,6 +47,10 @@ class DatabaseConnexion
         }
     }
 
+    /**
+     * Singleton getter
+     * @return DatabaseConnexion
+     */
     public static function getInstance() {
         if(!isset($instance)) {
             $instance = new DatabaseConnexion();
@@ -45,6 +58,10 @@ class DatabaseConnexion
         return $instance;
     }
 
+    /**
+     * Database connexion getter
+     * @return PDO
+     */
     public function getDB() {
         return $this->db;
     }

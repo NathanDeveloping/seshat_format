@@ -15,9 +15,20 @@ use seshatFormat\util\Logger;
 use PHPExcel_Writer_Excel2007;
 use PHPExcel_Style_Fill;
 
+/**
+ * Class SingleFormFormatter
+ * permet le formattage d'un formulaire
+ * bien spécifique et unique
+ *
+ * @package seshatFormat\scripts
+ */
 class SingleFormFormatter
 {
 
+    /**
+     * nom du formulaire vierge
+     * et nom du formulaire itéré
+     */
     private $nomForm, $instanceName;
 
     /**
@@ -39,8 +50,21 @@ class SingleFormFormatter
      */
     private $currentExcelObject, $URI, $db;
 
+    /**
+     * variable de stockage des retours de la requête
+     * @var
+     */
     private $formData;
 
+    /**
+     * SingleFormFormatter constructor.
+     * @param $nomForm
+     *          nom du formulaire vierge
+     * @param $uri
+     *          uuid dans la base
+     * @param $instanceName
+     *          nom spécifique du formulaire
+     */
     public function __construct($nomForm, $uri, $instanceName)
     {
         $this->nomForm = $nomForm;
@@ -236,22 +260,36 @@ class SingleFormFormatter
     }
 
     /**
+     * complète avec du texte la case de colonne actuelle
+     * et de ligne suivante
      * @param $label
+     *          contenu de la case
      */
     public function addNextLine($label) {
         $this->currentLine++;
         $this->currentExcelObject->getActiveSheet()->SetCellValue($this->currentColumn . $this->currentLine, $label);
     }
 
+    /**
+     * complète avec du texte la case de colonne suivante
+     * et de ligne actuelle
+     * @param $label
+     */
     public function addNextColumn($label) {
         $this->currentColumn++;
         $this->currentExcelObject->getActiveSheet()->SetCellValue($this->currentColumn . $this->currentLine, $label);
     }
 
+    /**
+     * eq. retour chariot (CR)
+     */
     public function resetColumn() {
         $this->currentColumn = 'A';
     }
 
+    /**
+     * insertion d'une ligne vide
+     */
     public function insertEmptyLine() {
         $this->resetColumn();
         $this->addNextLine(null);
@@ -283,6 +321,13 @@ class SingleFormFormatter
         $this->currentExcelObject ->getActiveSheet()->getColumnDimension('H')->setWidth(45);
     }
 
+    /**
+     * change la couleur du/des cellules spécifiées
+     * par la couleur bleu de base (#4D4DA1)
+     * (ex : A1 ou A1:E1)
+     * @param $cells
+     *      la ou les cellules concernées
+     */
     private function cellColor($cells){
         $this->currentExcelObject->getActiveSheet()->getStyle($cells)->getFill()->applyFromArray(array(
             'type' => PHPExcel_Style_Fill::FILL_SOLID,
@@ -293,14 +338,31 @@ class SingleFormFormatter
         $this->currentExcelObject->getActiveSheet()->getStyle($cells)->getFont()->getColor()->setRGB('fffff');
     }
 
+    /**
+     * retourne les coordonnées de la case actuelle
+     * @return string
+     *          coordonnées cellule
+     */
     public function getCurrentCell() {
         return $this->currentColumn . $this->currentLine;
     }
 
+    /**
+     * retourne la ligne de la case actuelle
+     * @return mixed
+     */
     public function getCurrentLine() {
         return $this->currentLine;
     }
 
+    /**
+     * Permet de séparer nom et prénoms
+     * à partir d'un string de ce type : (pierre_benoit) devient Pierre(indice 0) Benoit(indice 1)
+     *
+     * @param $underscoredName
+     * @return array
+     *
+     */
     public function splitNames($underscoredName) {
         $res = explode("_", $underscoredName);
         $res[0] = ucfirst($res[0]);
