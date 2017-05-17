@@ -36,7 +36,7 @@ class SingleFormFormatter
      * du fichier Excel
      * valeurs associées lors du passage dans le rowToArray()
      */
-    private $operators, $nbInstitutions, $nbSamplingPoints, $nbMeasurements, $nbSampleSuffix, $nbSampleKind;
+    private $operators, $stations, $data, $nbInstitutions, $nbMeasurements, $nbSampleSuffix, $nbSampleKind;
 
     /**
      * colonne et ligne actuelle
@@ -110,8 +110,7 @@ class SingleFormFormatter
      *          object phpExcel précédemment crée
      */
     public function format() {
-        var_dump($this->formData);
-        echo "nb fields : " . $this->operators->nbField;
+        //var_dump($this->formData);
         if($this->formData) {
             /**
              * données
@@ -120,8 +119,9 @@ class SingleFormFormatter
             $scientificField = $this->formData['INTRODUCTION_GROUP_SCIENTIFIC_FIELD'];
             $row = $this->operators->fields;
             $res = $this->splitNames($row[0]["OPERATOR"]);
-            $comment = $this->formData['METHODOLOGY'];
+            $comments = $this->formData['COMMENTS'];
             $sampleKind = $this->formData['SAMPLE_KIND'];
+            $sampleSuffix = $this->formData['SAMPLE_SUFFIX'];
             /**
              * début mise en page
              */
@@ -174,9 +174,16 @@ class SingleFormFormatter
             $this->addNextColumn("DESCRIPTION");
             $this->cellColor("A" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
             $this->resetColumn();
-            for ($i = 0; $i < $this->nbSamplingPoints; $i++) {
+            for ($i = 0; $i < $this->stations->nbField; $i++) {
                 $this->addNextLine("SAMPLING_POINT");
                 $this->cellColor($this->getCurrentCell());
+                $this->addNextColumn($this->stations->sampling_point_fullname);
+                $this->addNextColumn($this->stations->sampling_point_coordonate_system);
+                $this->addNextColumn($this->stations->sampling_point_abbreviation);
+                $this->addNextColumn($this->stations->sampling_point_longitude);
+                $this->addNextColumn($this->stations->sampling_point_latitude);
+                $this->addNextColumn($this->stations->sampling_point_altitude);
+                $this->addNextColumn($this->stations->sampling_point_description);
                 $this->resetColumn();
             }
             $this->insertEmptyLine();
@@ -214,6 +221,9 @@ class SingleFormFormatter
             for ($i = 0; $i < $this->nbSampleSuffix; $i++) {
                 $this->addNextLine("SAMPLE SUFFIX");
                 $this->cellColor($this->getCurrentCell());
+                $this->addNextColumn($sampleSuffix);
+                $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($sampleSuffix));
+                $this->resetColumn();
             }
             $this->insertEmptyLine();
             $this->insertEmptyLine();
@@ -222,9 +232,12 @@ class SingleFormFormatter
             $this->addNextColumn("UNIT");
             $this->cellColor("B" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
             $this->resetColumn();
-            for ($i = 0; $i < $this->nbMeasurements; $i++) {
+            for ($i = 0; $i < $this->data->nbField; $i++) {
                 $this->addNextLine("MEASUREMENT");
                 $this->cellColor($this->getCurrentCell());
+                $this->addNextColumn($this->data->fields[$i]['NATURE']);
+                $this->addNextColumn(null);
+                $this->addNextColumn($this->data->fields[$i]['UNIT']);
             }
             $this->insertEmptyLine();
             $this->addNextLine("METHODOLOGY");
@@ -250,10 +263,11 @@ class SingleFormFormatter
             $this->addNextLine("METHODOLOGY");
             $this->cellColor($this->getCurrentCell());
             $this->addNextColumn("comments");
-            $this->addNextColumn($comment);
+            $this->addNextColumn($comments);
             $this->resetColumn();
             $objWriter = new PHPExcel_Writer_Excel2007($this->currentExcelObject);
             $objWriter->save($this->instanceName . ".xlsx");
+            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.");
         } else {
             Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
         }
@@ -303,11 +317,12 @@ class SingleFormFormatter
     public function init() {
         $this->getDataFields();
         $this->operators = new Operator($this->nomForm, $this->URI);
+        $this->stations = new Station($this->nomForm, $this->URI);
+        $this->data = new Data($this->nomForm, $this->URI);
         $this->nbInstitutions = 3;
         $this->nbMeasurements = 4;
-        $this->nbSampleSuffix = 2;
-        $this->nbSampleKind=2;
-        $this->nbSamplingPoints = 4;
+        $this->nbSampleSuffix = 1;
+        $this->nbSampleKind=1;
         $this->currentColumn = 'A';
         $this->currentLine = 0;
         $this->currentExcelObject = new PHPExcel();

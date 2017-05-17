@@ -21,7 +21,7 @@ class Logger extends AbstractLogger
     {
         echo strtr($message, $context);
         $config = parse_ini_file("config/config.ini");
-        $stream = fopen($config['logsDir'] . date("m-d-y")  , 'a');
+        $stream = fopen($_SERVER['DOCUMENT_ROOT'] . $config['logsDir'] . date("m-d-y")  , 'a+');
         fwrite($this->stream, strtr($message, $context));
         fclose($stream);
     }
