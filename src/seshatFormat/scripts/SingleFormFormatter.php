@@ -14,6 +14,7 @@ use seshatFormat\util\Dictionnaire;
 use seshatFormat\util\Logger;
 use PHPExcel_Writer_Excel2007;
 use PHPExcel_Style_Fill;
+use seshatFormat\util\DatabaseConnexion;
 
 /**
  * Class SingleFormFormatter
@@ -24,7 +25,6 @@ use PHPExcel_Style_Fill;
  */
 class SingleFormFormatter
 {
-
     /**
      * nom du formulaire vierge
      * et nom du formulaire itéré
@@ -112,27 +112,48 @@ class SingleFormFormatter
     public function format() {
         //var_dump($this->formData);
         if($this->formData) {
-            /**
-             * données
-             */
-            $date = date("Y-m-d", strtotime($this->formData['DATE']));
-            $scientificField = $this->formData['INTRODUCTION_GROUP_SCIENTIFIC_FIELD'];
-            $row = $this->operators->fields;
-            $res = $this->splitNames($row[0]["OPERATOR"]);
-            $comments = $this->formData['COMMENTS'];
-            $sampleKind = $this->formData['SAMPLE_KIND'];
-            $sampleSuffix = $this->formData['SAMPLE_SUFFIX'];
-            /**
-             * début mise en page
-             */
-            $this->currentExcelObject->getActiveSheet()->setTitle('INTRO');
-            $this->addNextLine("TITLE");
-            $this->insertEmptyLine();
-            $this->addNextLine("DATA DESCRIPTION");
-            $this->addNextLine("KEYWORD");
-            $this->addNextLine("FILE CREATOR");
-            $this->addNextColumn($res[0] . " " . $res[1]);
-            $this->resetColumn();
+            $this->introWorksheet();
+            $this->dataWorksheet();
+            $this->currentExcelObject->setActiveSheetIndex(0);
+            $objWriter = new PHPExcel_Writer_Excel2007($this->currentExcelObject);
+            $objWriter->save($this->instanceName . ".xlsx");
+            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.");
+        } else {
+            Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
+        }
+    }
+
+    public function introWorksheet() {
+        /**
+         * données
+         */
+        $date = date("Y-m-d", strtotime($this->formData['DATE']));
+        $scientificField = $this->formData['INTRODUCTION_GROUP_SCIENTIFIC_FIELD'];
+        $row = $this->operators->fields;
+        $res = $this->splitNames($row[0]["OPERATOR"]);
+        $comments = $this->formData['COMMENTS'];
+        $sampleKind = $this->formData['SAMPLE_KIND'];
+        $sampleSuffix = $this->formData['SAMPLE_SUFFIX'];
+        /**
+         * début mise en page
+         */
+        $this->currentExcelObject->getActiveSheet()->setTitle('INTRO');
+        $this->addNextLine("TITLE");
+        $this->insertEmptyLine();
+        $this->addNextLine("DATA DESCRIPTION");
+        $this->addNextLine("KEYWORD");
+        $this->addNextLine("FILE CREATOR");
+        $this->addNextColumn($res[0] . " " . $res[1]);
+        $this->resetColumn();
+        $this->addNextLine("NAME");
+        $this->addNextColumn($res[1]);
+        $this->resetColumn();
+        $this->addNextLine("FIRST NAME");
+        $this->addNextColumn($res[0]);
+        $this->resetColumn();
+        $this->addNextLine("MAIL");
+        for ($i = 1; $i < $this->operators->nbField; $i++) {
+            $res = $this->splitNames($row[$i]["OPERATOR"]);
             $this->addNextLine("NAME");
             $this->addNextColumn($res[1]);
             $this->resetColumn();
@@ -140,136 +161,151 @@ class SingleFormFormatter
             $this->addNextColumn($res[0]);
             $this->resetColumn();
             $this->addNextLine("MAIL");
-            for ($i = 1; $i < $this->operators->nbField; $i++) {
-                $res = $this->splitNames($row[$i]["OPERATOR"]);
-                $this->addNextLine("NAME");
-                $this->addNextColumn($res[1]);
-                $this->resetColumn();
-                $this->addNextLine("FIRST NAME");
-                $this->addNextColumn($res[0]);
-                $this->resetColumn();
-                $this->addNextLine("MAIL");
-            }
-            $this->addNextLine("CREATION DATE");
-            $this->addNextColumn($date);
-            $this->resetColumn();
-            $this->addNextLine("LANGUAGE");
-            $this->addNextColumn("francais");
-            $this->resetColumn();
-            $this->addNextLine("PROJECT NAME");
-            for ($i = 0; $i < $this->nbInstitutions; $i++) {
-                $this->addNextLine("INSTITUTION");
-            }
-            $this->addNextLine("SCIENTIFIC FIELD");
-            $this->addNextColumn($scientificField);
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
-            $this->addNextColumn("SAMPLING POINTS");
-            $this->addNextColumn("COORDONATE SYSTEM");
-            $this->addNextColumn("ABBREVIATION");
-            $this->addNextColumn("LONGITUDE");
-            $this->addNextColumn("LATITUDE");
-            $this->addNextColumn("ELEVATION (m)");
-            $this->addNextColumn("DESCRIPTION");
-            $this->cellColor("A" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
-            $this->resetColumn();
-            for ($i = 0; $i < $this->stations->nbField; $i++) {
-                $this->addNextLine("SAMPLING_POINT");
-                $this->cellColor($this->getCurrentCell());
-                $this->addNextColumn($this->stations->sampling_point_fullname);
-                $this->addNextColumn($this->stations->sampling_point_coordonate_system);
-                $this->addNextColumn($this->stations->sampling_point_abbreviation);
-                $this->addNextColumn($this->stations->sampling_point_longitude);
-                $this->addNextColumn($this->stations->sampling_point_latitude);
-                $this->addNextColumn($this->stations->sampling_point_altitude);
-                $this->addNextColumn($this->stations->sampling_point_description);
-                $this->resetColumn();
-            }
-            $this->insertEmptyLine();
+        }
+        $this->addNextLine("CREATION DATE");
+        $this->addNextColumn($date);
+        $this->resetColumn();
+        $this->addNextLine("LANGUAGE");
+        $this->addNextColumn("francais");
+        $this->resetColumn();
+        $this->addNextLine("PROJECT NAME");
+        for ($i = 0; $i < $this->nbInstitutions; $i++) {
+            $this->addNextLine("INSTITUTION");
+        }
+        $this->addNextLine("SCIENTIFIC FIELD");
+        $this->addNextColumn($scientificField);
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->addNextColumn("SAMPLING POINTS");
+        $this->addNextColumn("COORDONATE SYSTEM");
+        $this->addNextColumn("ABBREVIATION");
+        $this->addNextColumn("LONGITUDE");
+        $this->addNextColumn("LATITUDE");
+        $this->addNextColumn("ELEVATION (m)");
+        $this->addNextColumn("DESCRIPTION");
+        $this->cellColor("A" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
+        $this->resetColumn();
+        for ($i = 0; $i < $this->stations->nbField; $i++) {
+            $this->addNextLine("SAMPLING_POINT");
             $this->cellColor($this->getCurrentCell());
-            $this->insertEmptyLine();
+            $this->addNextColumn($this->stations->sampling_point_fullname);
+            $this->addNextColumn($this->stations->sampling_point_coordonate_system);
+            $this->addNextColumn($this->stations->sampling_point_abbreviation);
+            $this->addNextColumn($this->stations->sampling_point_longitude);
+            $this->addNextColumn($this->stations->sampling_point_latitude);
+            $this->addNextColumn($this->stations->sampling_point_altitude);
+            $this->addNextColumn($this->stations->sampling_point_description);
+            $this->resetColumn();
+        }
+        $this->insertEmptyLine();
+        $this->cellColor($this->getCurrentCell());
+        $this->insertEmptyLine();
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextLine("SAMPLING DATE");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn($date);
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->addNextColumn(null);
+        $this->addNextColumn("ABBREVIATION");
+        $this->cellColor($this->getCurrentCell());
+        $this->resetColumn();
+        for ($i = 0; $i < $this->nbSampleKind; $i++) {
+            $this->addNextLine("SAMPLE KIND");
             $this->cellColor($this->getCurrentCell());
-            $this->addNextLine("SAMPLING DATE");
+            $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($sampleKind));
+            $this->addNextColumn(Dictionnaire::getInstance()->getTraduction(Dictionnaire::getInstance()->getTraduction($sampleKind)));
+            $this->resetColumn();
+        }
+        $this->insertEmptyLine();
+        $this->cellColor($this->getCurrentCell());
+        $this->insertEmptyLine();
+        $this->cellColor($this->getCurrentCell());
+        $this->insertEmptyLine();
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("");
+        $this->addNextColumn("ABBREVIATION");
+        $this->cellColor($this->getCurrentCell());
+        $this->resetColumn();
+        for ($i = 0; $i < $this->nbSampleSuffix; $i++) {
+            $this->addNextLine("SAMPLE SUFFIX");
             $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn($date);
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
+            $this->addNextColumn($sampleSuffix);
+            $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($sampleSuffix));
+            $this->resetColumn();
+        }
+        $this->insertEmptyLine();
+        $this->insertEmptyLine();
+        $this->addNextColumn("NATURE OF MEASUREMENT");
+        $this->addNextColumn("ABBREVIATION");
+        $this->addNextColumn("UNIT");
+        $this->cellColor("B" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
+        $this->resetColumn();
+        for ($i = 0; $i < $this->data->nbField; $i++) {
+            $this->addNextLine("MEASUREMENT");
+            $this->cellColor($this->getCurrentCell());
+            $this->addNextColumn($this->data->fields[$i]['NATURE']);
             $this->addNextColumn(null);
-            $this->addNextColumn("ABBREVIATION");
-            $this->cellColor($this->getCurrentCell());
-            $this->resetColumn();
-            for ($i = 0; $i < $this->nbSampleKind; $i++) {
-                $this->addNextLine("SAMPLE KIND");
-                $this->cellColor($this->getCurrentCell());
-                $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($sampleKind));
-                $this->addNextColumn(Dictionnaire::getInstance()->getTraduction(Dictionnaire::getInstance()->getTraduction($sampleKind)));
-                $this->resetColumn();
+            $this->addNextColumn($this->data->fields[$i]['UNIT']);
+        }
+        $this->insertEmptyLine();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("sampling method");
+        $this->resetColumn();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("sample conditionning");
+        $this->resetColumn();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("analysis or measurement method(s)");
+        $this->resetColumn();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("field campaign report");
+        $this->resetColumn();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("sample storage");
+        $this->resetColumn();
+        $this->addNextLine("METHODOLOGY");
+        $this->cellColor($this->getCurrentCell());
+        $this->addNextColumn("comments");
+        $this->addNextColumn($comments);
+        $this->resetColumn();
+    }
+
+    public function dataWorksheet() {
+        $this->currentExcelObject->createSheet(1)->setTitle("DATA");
+        $this->currentExcelObject->setActiveSheetIndex(1);
+        $this->resetCellNumber();
+        $this->addNextLine("station");
+        $this->addNextColumn("sample_kind");
+        $this->addNextColumn("sample_suffix");
+        $this->addNextColumn("date");
+        /**
+         * labels des champs
+         */
+        for ($i = 0; $i < $this->data->nbField; $i++) {
+            $this->addNextColumn($this->data->fields[$i]['NATURE']);
+            $this->addNextLine($this->data->fields[$i]['UNIT']);
+            $this->returnPreviousLine();
+        }
+        $this->cellColor("A" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
+        $this->insertEmptyLine();
+        for($i = 0; $i < $this->data->nbFieldValue;$i++) {
+            $this->addNextLine($this->stations->sampling_point_abbreviation);
+            $this->addNextColumn(Dictionnaire::getInstance()->getTraduction(Dictionnaire::getInstance()->getTraduction($this->formData['SAMPLE_KIND'])));
+            $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($this->formData['SAMPLE_SUFFIX']));
+            $this->addNextColumn(date("Y-m-d", strtotime($this->formData['DATE'])));
+            for($j = 0; $j < $this->data->nbField; $j++) {
+                $this->addNextColumn($this->data->fields[$j]['VALUE']);
             }
-            $this->insertEmptyLine();
-            $this->cellColor($this->getCurrentCell());
-            $this->insertEmptyLine();
-            $this->cellColor($this->getCurrentCell());
-            $this->insertEmptyLine();
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("");
-            $this->addNextColumn("ABBREVIATION");
-            $this->cellColor($this->getCurrentCell());
             $this->resetColumn();
-            for ($i = 0; $i < $this->nbSampleSuffix; $i++) {
-                $this->addNextLine("SAMPLE SUFFIX");
-                $this->cellColor($this->getCurrentCell());
-                $this->addNextColumn($sampleSuffix);
-                $this->addNextColumn(Dictionnaire::getInstance()->getTraduction($sampleSuffix));
-                $this->resetColumn();
-            }
-            $this->insertEmptyLine();
-            $this->insertEmptyLine();
-            $this->addNextColumn("NATURE OF MEASUREMENT");
-            $this->addNextColumn("ABBREVIATION");
-            $this->addNextColumn("UNIT");
-            $this->cellColor("B" . $this->getCurrentLine() . ":" . $this->getCurrentCell());
-            $this->resetColumn();
-            for ($i = 0; $i < $this->data->nbField; $i++) {
-                $this->addNextLine("MEASUREMENT");
-                $this->cellColor($this->getCurrentCell());
-                $this->addNextColumn($this->data->fields[$i]['NATURE']);
-                $this->addNextColumn(null);
-                $this->addNextColumn($this->data->fields[$i]['UNIT']);
-            }
-            $this->insertEmptyLine();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("sampling method");
-            $this->resetColumn();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("sample conditionning");
-            $this->resetColumn();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("analysis or measurement method(s)");
-            $this->resetColumn();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("field campaign report");
-            $this->resetColumn();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("sample storage");
-            $this->resetColumn();
-            $this->addNextLine("METHODOLOGY");
-            $this->cellColor($this->getCurrentCell());
-            $this->addNextColumn("comments");
-            $this->addNextColumn($comments);
-            $this->resetColumn();
-            $objWriter = new PHPExcel_Writer_Excel2007($this->currentExcelObject);
-            $objWriter->save($this->instanceName . ".xlsx");
-            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.");
-        } else {
-            Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
         }
     }
 
@@ -299,6 +335,22 @@ class SingleFormFormatter
      */
     public function resetColumn() {
         $this->currentColumn = 'A';
+    }
+
+    /**
+     * retour à la cellule de ligne précédente
+     */
+    public function returnPreviousLine() {
+        $this->currentLine--;
+    }
+
+    /**
+     * réinitialise la cellule courante
+     * utile lors du changement de worksheet
+     */
+    public function resetCellNumber() {
+        $this->resetColumn();
+        $this->currentLine = 1;
     }
 
     /**

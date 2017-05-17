@@ -7,6 +7,7 @@
  */
 
 namespace seshatFormat\scripts;
+use seshatFormat\util\DatabaseConnexion;
 
 /**
  * Class Station

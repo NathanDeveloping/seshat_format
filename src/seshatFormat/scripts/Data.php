@@ -8,6 +8,8 @@
 
 namespace seshatFormat\scripts;
 
+use seshatFormat\util\DatabaseConnexion;
+
 /**
  * Class Data
  *  permet la récupération des différents
@@ -20,7 +22,7 @@ class Data
 
     private $nomFormulaire, $db, $uri;
 
-    private $nbField, $fields;
+    private $nbField, $fields, $nbFieldValue;
 
     /**
      * Data constructor.
@@ -79,6 +81,7 @@ class Data
             }
         }
         $this->nbField = count($this->fields);
+        $this->nbFieldValue = 1;
     }
 
     public function __get($name)

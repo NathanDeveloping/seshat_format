@@ -6,6 +6,7 @@ use PHPExcel;
 use PHPExcel_Writer_Excel2007;
 use Exception;
 use PDO;
+use seshatFormat\util\DatabaseConnexion;
 
 /**
  * Class DatabaseFormatter
@@ -37,7 +38,7 @@ class DatabaseFormatter
     public function __construct() {
         $this->logger = Logger::getInstance();
         $this->db = DatabaseConnexion::getInstance()->getDB();
-        $this->init();
+        $this->getDataTables();
     }
 
     /**
@@ -48,22 +49,21 @@ class DatabaseFormatter
         if(!isset($this->db)) {
             return;
         }
-        $this->dataList = $this->db->query('SELECT table_name FROM information_schema.tables WHERE table_schema=\'public\' AND table_name LIKE \'%_CORE\';');
+        $this->dataList = $this->db->query('SELECT table_name FROM information_schema.tables WHERE table_schema=\'public\' AND table_name LIKE \'%_CORE\'')->fetchAll();
     }
-
 
     /**
      * Lance la procédure de formatting
      * des données des différents formulaires
      */
     public function formatAllData() {
-        if(isset($dataList)) {
-            foreach ($dataList as $form) {
-
+        if(isset($this->dataList)) {
+            foreach ($this->dataList as $form) {
+                $formName = str_replace("_CORE", "", $form[0]);
+                $ff = new FormFormatter($formName);
+                $ff->formatAll();
             }
         }
     }
-
-
 
 }

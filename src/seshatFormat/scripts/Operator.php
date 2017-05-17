@@ -7,7 +7,7 @@
  */
 
 namespace seshatFormat\scripts;
-
+use seshatFormat\util\DatabaseConnexion;
 /**
  * Class Operator
  *  permet la récupération des différents

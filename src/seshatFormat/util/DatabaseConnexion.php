@@ -6,7 +6,7 @@
  * Time: 10:06
  */
 
-namespace seshatFormat\scripts;
+namespace seshatFormat\util;
 use seshatFormat\util\Logger;
 use Exception;
 use PDO;

@@ -8,7 +8,7 @@
 
 namespace seshatFormat\scripts;
 
-
+use seshatFormat\util\DatabaseConnexion;
 use seshatFormat\util\Logger;
 
 /**
