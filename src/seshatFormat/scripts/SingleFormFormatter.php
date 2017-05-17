@@ -260,6 +260,7 @@ class SingleFormFormatter
             $this->addNextColumn($this->data->fields[$i]['NATURE']);
             $this->addNextColumn(null);
             $this->addNextColumn($this->data->fields[$i]['UNIT']);
+            $this->resetColumn();
         }
         $this->insertEmptyLine();
         $this->addNextLine("METHODOLOGY");

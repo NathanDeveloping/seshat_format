@@ -31,7 +31,11 @@ class Dictionnaire
         $this->table = array(
           "RW" => "RAW WATER",
             "RAW WATER" => "W",
-            "manual_sampling" => "manual sampling"
+            "manual_sampling" => "manual sampling",
+            "FC" => "field centrifuge",
+            "field centrifuge" => "FC",
+            "FW" => "FILTERED WATER",
+            "FILTERED WATER" => "FW"
         );
     }
 
