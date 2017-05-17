@@ -57,6 +57,11 @@ class SingleFormFormatter
     private $formData;
 
     /**
+     * dossier où exporter les formulaires générés
+     */
+    private $destinationFolder;
+
+    /**
      * SingleFormFormatter constructor.
      * @param $nomForm
      *          nom du formulaire vierge
@@ -67,6 +72,8 @@ class SingleFormFormatter
      */
     public function __construct($nomForm, $uri, $instanceName)
     {
+        $config = parse_ini_file("config/config.ini");
+        $this->destinationFolder = $config['destinationFolder'];
         $this->nomForm = $nomForm;
         $this->URI = $uri;
         $this->instanceName = $instanceName;
@@ -116,7 +123,10 @@ class SingleFormFormatter
             $this->dataWorksheet();
             $this->currentExcelObject->setActiveSheetIndex(0);
             $objWriter = new PHPExcel_Writer_Excel2007($this->currentExcelObject);
-            $objWriter->save($this->instanceName . ".xlsx");
+            if(!file_exists($this->destinationFolder)) {
+                mkdir($this->destinationFolder);
+            }
+            $objWriter->save($this->destinationFolder . $this->instanceName . ".xlsx");
             Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.");
         } else {
             Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
