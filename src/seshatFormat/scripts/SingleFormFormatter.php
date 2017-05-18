@@ -127,7 +127,7 @@ class SingleFormFormatter
                 mkdir($this->destinationFolder);
             }
             $objWriter->save($this->destinationFolder . $this->instanceName . ".xlsx");
-            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.");
+            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.\n");
         } else {
             Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
         }

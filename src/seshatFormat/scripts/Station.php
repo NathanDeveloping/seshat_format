@@ -8,6 +8,11 @@
 
 namespace seshatFormat\scripts;
 use seshatFormat\util\DatabaseConnexion;
+use MongoDB\Driver\Manager;
+use MongoDB\Driver\Query;
+use Exception;
+use seshatFormat\util\Logger;
+use MongoDB\Driver\ReadPreference;
 
 /**
  * Class Station
@@ -21,7 +26,7 @@ use seshatFormat\util\DatabaseConnexion;
 class Station
 {
 
-    private $nomFormulaire, $db, $uri;
+    private $nomFormulaire, $db, $mongo_db, $uri;
 
     private $nbField, $fields;
 
@@ -56,8 +61,33 @@ class Station
         $this->sortData();
     }
 
-    public function getAdditionalData() {
-
+    public function getAdditionalData($station) {
+        $config = parse_ini_file("config/config.ini");
+        try {
+            if(empty($config['mongo_authSource']) && empty($config['mongo_username']) && empty($config['mongo_password'])) {
+                $this->mongo_db = new Manager("mongodb://" . $config['mongo_host'] . ':' . $config['mongo_port']);
+            } else {
+                $this->mongo_db= new Manager("mongodb://" . $config['mongo_user'] . ':' . $config['mongo_password'] . '@' . $config['mongo_host'] . ':' . $config['mongo_port']. '/' . $config['mongo_dbname']);
+            }
+            $filter = ['INTRO.STATION.ABBREVIATION' => $station];
+            $options = [
+                'projection' => [
+                    '_id' => 0,
+                    'INTRO.STATION' => 1
+                ],
+            ];
+            $query = new Query($filter, $options);
+            $cursor = $this->mongo_db->executeQuery('MOBISED.water', $query);
+            foreach($cursor as $row) {
+                if($row->INTRO->STATION[0]->ABBREVIATION == $station) {
+                    return $row->INTRO->STATION[0];
+                    break;
+                }
+            }
+        } catch (Exception $e) {
+            Logger::getInstance()->error("impossible de se connecter à la base MongoDB : " . $e->getMessage());
+            exit();
+        }
     }
 
     public function __get($name)
@@ -96,7 +126,14 @@ class Station
                     $this->sampling_point_altitude= $this->fields[0]['GPS_GROUP_SAMPLING_POINT_GPS_ALT'];
                 }
             } else {
-                //TODO:rechercher base mongo
+                $station = $this->fields[0]["SAMPLING_POINT"];
+                $datas = $this->getAdditionalData($station);
+                $this->sampling_point_fullname = $datas->NAME;
+                $this->sampling_point_description = $datas->DESCRIPTION;
+                $this->sampling_point_latitude = $datas->LATITUDE;
+                $this->sampling_point_longitude = $datas->LONGITUDE;
+                $this->sampling_point_altitude = $datas->ELEVATION;
+                $this->sampling_point_abbreviation = $station;
             }
         }
     }
