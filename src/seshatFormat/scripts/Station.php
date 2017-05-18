@@ -64,7 +64,7 @@ class Station
     public function getAdditionalData($station) {
         $config = parse_ini_file("config/config.ini");
         try {
-            if(empty($config['mongo_authSource']) && empty($config['mongo_username']) && empty($config['mongo_password'])) {
+            if(empty($config['mongo_user']) && empty($config['mongo_password'])) {
                 $this->mongo_db = new Manager("mongodb://" . $config['mongo_host'] . ':' . $config['mongo_port']);
             } else {
                 $this->mongo_db= new Manager("mongodb://" . $config['mongo_user'] . ':' . $config['mongo_password'] . '@' . $config['mongo_host'] . ':' . $config['mongo_port']. '/' . $config['mongo_dbname']);

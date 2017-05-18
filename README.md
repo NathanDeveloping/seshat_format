@@ -15,6 +15,13 @@ port= ## port du serveur
 dbname= ## nom de la BDD : à initialiser à postgres
 user= ## nom d'utilisateur pour se connecter à la BDD
 password=
+
+mongo_host=
+mongo_port=
+mongo_user=
+mongo_password=
+mongo_dbname=MOBISED
+
 logsDir=../logs/ ## dossier contenant les fichiers logs
 destinationFolder=../generated_form/ ## dossier destination des formulaires formattés
 ````
