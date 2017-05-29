@@ -137,12 +137,23 @@ class SingleFormFormatter
         /**
          * données
          */
-        $date = date("Y-m-d", strtotime($this->formData['DATE']));
+        $date = date("Y-m-d", strtotime($this->formData['DATE_GROUP_DATE']));
         $scientificField = $this->formData['INTRODUCTION_GROUP_SCIENTIFIC_FIELD'];
         $row = $this->operators->fields;
         $res = $this->splitNames($row[0]["OPERATOR"]);
         $comments = $this->formData['COMMENTS'];
-        $sampleKind = $this->formData['SAMPLE_KIND'];
+        if(isset($this->formData['COMMENTS_METHOD'])) {
+            $comments_method = $this->formData['COMMENTS_METHOD'];
+        } else if(isset($this->formData['COMMENTS_METHOD2'])) {
+            $comments_method = $this->formData['COMMENTS_METHOD2'];
+        } else {
+            $comments_method = $this->formData['COMMENTS_METHOD_OTHER'];
+        }
+        if(isset($this->formData['SAMPLE_KIND'])) {
+            $sampleKind = $this->formData['SAMPLE_KIND'];
+        } else {
+            $sampleKind = $this->formData['INTRODUCTION_GROUP_SAMPLE_KIND'];
+        }
         $sampleSuffix = $this->formData['SAMPLE_SUFFIX'];
         /**
          * début mise en page
@@ -266,6 +277,9 @@ class SingleFormFormatter
         $this->addNextLine("METHODOLOGY");
         $this->cellColor($this->getCurrentCell());
         $this->addNextColumn("sampling method");
+        if(isset($this->formData['COMMENTS_METHOD'])) {
+            $this->addNextColumn($this->formData['COMMENTS_METHOD']);
+        }
         $this->resetColumn();
         $this->addNextLine("METHODOLOGY");
         $this->cellColor($this->getCurrentCell());
@@ -274,6 +288,7 @@ class SingleFormFormatter
         $this->addNextLine("METHODOLOGY");
         $this->cellColor($this->getCurrentCell());
         $this->addNextColumn("analysis or measurement method(s)");
+        $this->addNextColumn($comments_method);
         $this->resetColumn();
         $this->addNextLine("METHODOLOGY");
         $this->cellColor($this->getCurrentCell());

@@ -13,5 +13,3 @@ RUN apt-get install -y libpq-dev libsasl2-dev libssl-dev \
     && docker-php-ext-install pdo pdo_pgsql pgsql zip
 
 RUN pecl install mongodb && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongo.ini
-
-db.water.find({"INTRO.STATION.ABBREVIATION" : "JOMED"}, {"INTRO" : { "$elemMatch" : "STATION" : { "$elemMatch" : {"ABBREVIATION" : "JOMED"}}}});
