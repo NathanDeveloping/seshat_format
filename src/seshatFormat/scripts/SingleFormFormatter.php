@@ -15,6 +15,7 @@ use seshatFormat\util\Logger;
 use PHPExcel_Writer_Excel2007;
 use PHPExcel_Style_Fill;
 use seshatFormat\util\DatabaseConnexion;
+use seshatFormat\util\OccurenceFormulaire;
 
 /**
  * Class SingleFormFormatter
@@ -126,8 +127,19 @@ class SingleFormFormatter
             if(!file_exists($this->destinationFolder)) {
                 mkdir($this->destinationFolder);
             }
-            $objWriter->save($this->destinationFolder . $this->instanceName . ".xlsx");
-            Logger::getInstance()->info("Formulaire [" . $this->instanceName . "] formatté avec succès.\n");
+            $output_array = array();
+            $o = OccurenceFormulaire::getInstance();
+            preg_match("/(.*?)(?=_[1-9]{1,2}$|$)/", $this->instanceName, $output_array);
+            $clearName = $output_array[0];
+            $nbO = $o->getOccurrences($clearName);
+            if($nbO != 0) {
+                $finalName = $clearName . "_" . $nbO;
+            } else {
+                $finalName = $clearName;
+            }
+            $objWriter->save($this->destinationFolder . $finalName . ".xlsx");
+            Logger::getInstance()->info("Formulaire [" . $finalName . "] formatté avec succès.\n");
+            $o->addOccurrence($clearName);
         } else {
             Logger::getInstance()->alert("SingleFormFormatter : données introuvables.");
         }

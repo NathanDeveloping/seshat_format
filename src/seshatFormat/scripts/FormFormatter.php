@@ -54,7 +54,6 @@ class FormFormatter
      */
     public function formatAll() {
         $this->getDistinctForms();
-        var_dump($this->formList);
         if($this->formList) {
             foreach ($this->formList as $formRow) {
                 $formFormatter = new SingleFormFormatter($this->nomForm, $formRow['_URI'], $formRow['META_INSTANCE_NAME']);
