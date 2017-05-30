@@ -57,7 +57,6 @@ class Station
             "{URI}" => $this->uri
         ]));
         if(!$this->fields) {
-            echo "caught!";
             $this->fields = $this->db->query(strtr('SELECT "SAMPLING_POINT_GROUP_SAMPLING_POINT_FULLNAME", "SAMPLING_POINT_GROUP_SAMPLING_POINT_ABBREVIATION",
                 "SAMPLING_POINT_GROUP_SAMPLING_POINT_DESCRIPTION", "GPS_GROUP_SAMPLING_POINT_GPS_ALT", "GPS_GROUP_SAMPLING_POINT_GPS_LAT", "GPS_GROUP_SAMPLING_POINT_GPS_LAT2", "GPS_GROUP_SAMPLING_POINT_GPS_LNG2",
                 "GPS_GROUP_SAMPLING_POINT_GPS_LNG", "SAMPLING_POINT_GROUP_MANUAL_GPS" FROM "{tableCore}" WHERE "_URI" = \'{URI}\'', [

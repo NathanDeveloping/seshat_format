@@ -167,6 +167,7 @@ class SingleFormFormatter
             $sampleKind = $this->formData['INTRODUCTION_GROUP_SAMPLE_KIND'];
         }
         $sampleSuffix = $this->formData['SAMPLE_SUFFIX'];
+        $usersAdditionalData = new Users();
         /**
          * début mise en page
          */
@@ -185,6 +186,8 @@ class SingleFormFormatter
         $this->addNextColumn($res[0]);
         $this->resetColumn();
         $this->addNextLine("MAIL");
+        $this->addNextColumn($usersAdditionalData->getUserAdditionalData($res[0], $res[1]));
+        $this->resetColumn();
         for ($i = 1; $i < $this->operators->nbField; $i++) {
             $res = $this->splitNames($row[$i]["OPERATOR"]);
             $this->addNextLine("NAME");
@@ -194,6 +197,8 @@ class SingleFormFormatter
             $this->addNextColumn($res[0]);
             $this->resetColumn();
             $this->addNextLine("MAIL");
+            $this->addNextColumn($usersAdditionalData->getUserAdditionalData($res[0], $res[1]));
+            $this->resetColumn();
         }
         $this->addNextLine("CREATION DATE");
         $this->addNextColumn($date);
