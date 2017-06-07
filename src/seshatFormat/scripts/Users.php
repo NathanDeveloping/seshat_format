@@ -50,7 +50,7 @@ class Users
             if(isset($scents[$i])) {
                 return $scents[$i]->MAIL;
             } else {
-                return null;
+                return "";
             }
         } catch (Exception $e) {
             Logger::getInstance()->error("impossible de se connecter à la base MongoDB : " . $e->getMessage());
