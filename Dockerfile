@@ -8,8 +8,13 @@ RUN echo "deb http://repo.mongodb.org/apt/debian jessie/mongodb-org/3.4 main" | 
 
 RUN apt-get update
 
-RUN apt-get install -y libpq-dev libsasl2-dev libssl-dev \
+RUN apt-get install -y git-core libpq-dev libsasl2-dev libssl-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql zip
 
 RUN pecl install mongodb && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongo.ini
+
+COPY . /applis/seshat-format
+WORKDIR /applis/seshat-format
+RUN php -r "eval('?>'.file_get_contents('http://getcomposer.org/installer'));"
+RUN php composer.phar install
