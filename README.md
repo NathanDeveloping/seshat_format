@@ -28,7 +28,7 @@ demarrer le conteneur avec la commande : `docker start id_conteneur`
 
 ## Configuration
 
-Pour configurer les différents paramètres, il faut créer le fichier *src/config/config.ini* et spécifier
+Pour configurer les différents paramètres, il faut éditer le fichier *src/config/config.ini* et spécifier
 les champs suivants :
 
 ````
