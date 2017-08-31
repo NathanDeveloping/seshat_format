@@ -20,7 +20,7 @@ recuperer l'id de l'image avec la commande : docker image ls
 
 executer : `docker run -i -t id_image /bin/bash`
 
-quitter le conteneur `ctrl+c`
+quitter le conteneur `ctrl+d`
 
 recuperer l'id du conteneur avec la commande : `docker ps -a`
 
