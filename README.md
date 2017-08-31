@@ -6,6 +6,25 @@ d'un fichier tabulaire Excel (.xlsx), ceci permettant l'édition ultérieure des
 
 La base de données MongoDB de MOBISED est nécessaire pour l'auto-completion des formulaires (email des operateurs
 et informations sur les stations.) 
+## Installation
+
+pour installer le conteneur seshat_format :
+
+git clone https://github.com/arnouldpy/seshat_format.git
+
+aller dans le repertoire : seshat-format
+
+entrer la commande : docker build .
+
+recuperer l'id de l'image avec la commande : docker image ls
+
+executer : docker run -i -t id_image /bin/bash
+
+quitter le conteneur ctrl+c
+
+recuperer l'id du conteneur avec la commande : docker ps -a
+
+demarrer le conteneur avec la commande : docker start id_conteneur
 
 ## Configuration
 
