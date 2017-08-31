@@ -14,17 +14,17 @@ pour installer le conteneur seshat_format :
 
 aller dans le repertoire : seshat-format
 
-entrer la commande : docker build .
+entrer la commande : `docker build .`
 
 recuperer l'id de l'image avec la commande : docker image ls
 
-executer : docker run -i -t id_image /bin/bash
+executer : `docker run -i -t id_image /bin/bash`
 
-quitter le conteneur ctrl+c
+quitter le conteneur `ctrl+c`
 
-recuperer l'id du conteneur avec la commande : docker ps -a
+recuperer l'id du conteneur avec la commande : `docker ps -a`
 
-demarrer le conteneur avec la commande : docker start id_conteneur
+demarrer le conteneur avec la commande : `docker start id_conteneur`
 
 ## Configuration
 
