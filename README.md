@@ -10,7 +10,7 @@ et informations sur les stations.)
 
 pour installer le conteneur seshat_format :
 
-'''git clone https://github.com/arnouldpy/seshat_format.git'''
+`git clone https://github.com/arnouldpy/seshat_format.git`
 
 aller dans le repertoire : seshat-format
 
