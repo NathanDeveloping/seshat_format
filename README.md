@@ -4,6 +4,7 @@ Script permettant le formattage des données résultantes du carnet de terrain �
 Le script interroge la base de données PostgreSQL pour récupérer les données puis les met en page au sein
 d'un fichier tabulaire Excel (.xlsx), ceci permettant l'édition ultérieure des données.
 
+Avant tout vérifier la présence de la base MOBISED importé via le projet geoOTELo json_mobised
 La base de données MongoDB de MOBISED est nécessaire pour l'auto-completion des formulaires (email des operateurs
 et informations sur les stations.) 
 ## Installation
