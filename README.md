@@ -1,4 +1,4 @@
-#Seshat Format
+# Seshat Format
 
 Script permettant le formattage des données résultantes du carnet de terrain électronique [Seshat](https://github.com/arnouldpy/seshat).
 Le script interroge la base de données PostgreSQL pour récupérer les données puis les met en page au sein
@@ -13,6 +13,8 @@ pour installer le conteneur seshat_format :
 `git clone https://github.com/arnouldpy/seshat_format.git`
 
 aller dans le repertoire : seshat-format
+
+entrer la commande : `php composer.phar install`
 
 entrer la commande : `docker build .`
 
